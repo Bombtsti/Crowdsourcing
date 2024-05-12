@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer" />
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mycss1.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dialog.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/semantic.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/myjs1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<div class="bigbox">
+    <div class="pusher">
+        <div class="ui vertical masthead center aligned segment">
+            <div class="ui container">
+                <div class="ui large secondary pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <a class="item" th:href="@{/toIndex}">首页</a>
+                    <a class="item" th:if="${session.userid!=null}" th:href="@{/toEdit}">发布需求</a>
+                    <a class="item" th:if="${session.userid==null}" th:href="@{/toLogin}">发布需求</a>
+                    <a class="active item" th:if="${session.userid!=null}" th:href="@{/task/getAllTaskVo}">我的需求</a>
+                    <a class="active item" th:if="${session.userid==null}" th:href="@{/toLogin}">我的需求</a>
+<!--                    <a class="item">待定</a>-->
+                    <div class="right item">
+                        <div class="content" th:if="${session.userid!=null}">
+                            <div class="ui inline dropdown">
+                                <div class="text">
+                                    <img class="ui avatar image" th:src="@{/image/usericon.png}">
+                                    <a href="#" th:text="${session.username}"></a>
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar1.png}">
+                                        <a href="#" th:text="个人中心"></a>
+                                    </div>
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar2.png}">
+                                        <a th:href="@{/logout}" th:text="退出登录"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="ui inverted button" th:if="${session.userid==null}" th:href="@{/login}">登录</a>
+                    </div>
+                </div>
+            </div>
+            <div class="box1">
+                <table class="ui table segment">
+                    <thead>
+                    <tr>
+                        <th class="two wide">ID</th>
+                        <th class="two wide">开始时间</th>
+                        <th class="two wide">结束时间</th>
+                        <th class="two wide">任务描述</th>
+                        <th class="two wide">状态</th>
+                        <th class="two wide">创建时间</th>
+                        <th class="two wide">位置</th>
+                        <th class="two wide">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="task:${pageInfo.list}">
+                        <td th:text="${task.taskId}"></td>
+                        <td th:text="${task.taskStartTime}"></td>
+                        <td th:text="${task.taskEndTime}"></td>
+                        <td th:text="${task.taskDesc}"></td>
+                        <td th:text="${task.taskStatus}"></td>
+                        <td th:text="${task.taskCreateTime}"></td>
+                        <td th:text="${task.locationDesc}"></td>
+                        <td>
+                            <button class="find-btn" th:onclick="findTaskInfo([[${task.taskId}]],0)">查看</button>
+                            <button th:onclick="deleteTaskById([[${task.taskId}]])">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>当前 <span th:text="${pageInfo.pageNum}"></span> 页,
+                    总 <span th:text="${pageInfo.pages}"></span> 页,
+                    共<span th:text="${pageInfo.total}"></span> 条记录
+                </p>
+                <br>
+                <a th:href="@{/task/getAllTaskVo}">首页</a>
+                <a th:href="@{/task/getAllTaskVo(pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">上一页</a>
+                <a th:href="@{/task/getAllTaskVo(pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">下一页</a>
+                <a th:href="@{/task/getAllTaskVo(pageNum=${pageInfo.pages})}">尾页</a>
+
+
+<!--            dialog-->
+                <div class="modal">
+                    <div class="close-btn">X</div>
+                    <h1>查看结果</h1>
+                    <div class="box2">
+                        <a class="lefticon"><</a>
+                        <a onclick="findTaskInfo(id,index)" class="righticon">></a>
+                        <p>等级:良好</p>
+                        <p>主观描述:空气质量良好。</p>
+                        <p>现场照片:</p>
+                        <img src="" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const findBtn = document.querySelector('.find-btn')
+    const closeBtn = document.querySelector('.close-btn')
+    const modal = document.querySelector('.modal')
+    const bigbox = document.querySelector('.bigbox')
+
+    // findBtn.addEventListener('click',function () {
+    //     modal.style.display = 'flex'
+    // })
+    closeBtn.addEventListener('click',function () {
+        modal.style.display = 'none'
+    })
+    window.addEventListener('click',(e)=>{
+        if (e.target == bigbox){
+            modal.style.display = 'none'
+        }
+    })
+
+    function findTaskInfo(id,index) {
+        modal.style.display = 'flex';
+        $(".box2").html("");
+        var innerHTML = "";
+        $.ajax({
+            type:"get",
+            url:"/data/getResDataByTaskId/"+id,
+            success:function (res) {
+                //console.log(res.data)
+                var resdata = res.data;
+                var len = resdata.length;
+                if (res.status == 200){
+                    if (len>0){
+                        // console.log(resdata.length)
+                        if (index < 1){
+                            innerHTML += "<button class='lefticon' onclick='findTaskInfo(\"" +id+ "\""+","+(len-1)+")'><</button>";
+                        }else{
+                            innerHTML += "<button class='lefticon' onclick='findTaskInfo(\"" +id+ "\""+","+(index-1)+")'><</button>";
+                        }
+                        if (index > len-2){
+                            innerHTML += "<button class='righticon' onclick='findTaskInfo(\"" +id+ "\""+","+0+")'>></button>";
+                        }else{
+                            // innerHTML += "<button class='righticon' onclick='findTaskInfo(\""+id+"\")'>></button>";
+                            innerHTML += "<button class='righticon' onclick='findTaskInfo(\"" +id+ "\""+","+(index+1)+")'>></button>";
+                        }
+                        innerHTML += "<p>"+"质量等级:"+resdata[index].dataGrade+"</p>";
+                        innerHTML += "<p>"+"主观描述:"+resdata[index].dataDesc+"</p>";
+                        innerHTML += "<p>现场照片:</p>";
+                        innerHTML += "<img src="+"'"+resdata[index].dataImg+"'"+"alt=''>";
+                        $(".box2").html(innerHTML);
+                    }else{
+                        innerHTML += "<h1>还未获得数据</h1>";
+                        $(".box2").html(innerHTML);
+                    }
+                }else{
+                    alert("操作失败")
+                }
+            },
+            error:function (res) {
+                console.log(res)
+            }
+        })
+    }
+    function deleteTaskById(id) {
+        $.ajax({
+            type:"get",
+            url:"/task/deleteTaskById/"+id,
+            success:function (res) {
+                if (res.status == 200){
+                    window.location.href = "/task/getAllTaskVo"
+                }else{
+                    alert("删除失败")
+                }
+            },
+            error:function (res) {
+                console.log(res)
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

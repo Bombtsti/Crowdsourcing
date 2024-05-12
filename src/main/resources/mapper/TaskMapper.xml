@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.TaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Task">
+        <id column="task_id" property="taskId" />
+        <result column="task_startTime" property="taskStartTime" />
+        <result column="task_endTime" property="taskEndTime" />
+        <result column="task_desc" property="taskDesc" />
+        <result column="task_incentive" property="taskIncentive" />
+        <result column="task_worNum" property="taskWorNum" />
+        <result column="location_id" property="locationId" />
+        <result column="employer_id" property="employerId" />
+        <result column="task_createTime" property="taskCreateTime" />
+        <result column="task_finishTime" property="taskFinishTime" />
+        <result column="task_status" property="taskStatus" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        task_id, task_startTime, task_endTime ,task_desc, task_incentive, task_worNum, location_id,employer_id,task_createTime,task_finishTime,task_status
+    </sql>
+
+    <select id="selectTasks" resultMap="BaseResultMap">
+        SELECT task_id, task_startTime, task_endTime ,task_desc, task_incentive, task_worNum, location_id,employer_id,,task_createTime,task_finishTime,task_status from task
+    </select>
+
+    <select id="selectTaskVos" parameterType="String" resultType="com.zlw.crowdsourcing.vo.TaskVo">
+        SELECT t.task_id,t.task_startTime,t.task_endTime,t.task_desc,t.task_incentive,t.task_worNum,l.location_long,l.location_lat,l.location_desc,t.task_createTime,t.task_finishTime,t.task_status,t.employer_id,e.employer_name
+        from task t,location l,employer e
+        where t.location_id = l.location_id and t.employer_id = e.employer_id and t.employer_id = #{id}
+    </select>
+    <select id="selectTaskById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Task">
+        select task_id, task_startTime, task_endTime ,task_desc, task_incentive, task_worNum, location_id ,employer_id,task_createTime,task_finishTime,task_status from task where task_id = #{id};
+    </select>
+    <select id="selectTaskVoById" parameterType="String" resultType="com.zlw.crowdsourcing.vo.TaskVo">
+        SELECT t.task_id,t.task_startTime,t.task_endTime,t.task_desc,t.task_incentive,t.task_worNum,l.location_long,l.location_lat,l.location_desc,t.task_createTime,t.task_finishTime,t.task_status,t.employer_id,e.employer_name
+        from task t,location l,employer e
+        where t.location_id = l.location_id and t.employer_id = e.employer_id and t.task_id = #{id}
+    </select>
+    <insert id="insertTask" parameterType="com.zlw.crowdsourcing.pojo.Task">
+        insert into task(task_id, task_startTime, task_endTime, task_desc, task_incentive, task_worNum, location_id,employer_id,task_createTime,task_finishTime,task_status)
+        values(#{taskId},#{taskStartTime},#{taskEndTime},#{taskDesc},#{taskIncentive},#{taskWorNum},#{locationId},#{employerId},#{taskCreateTime},#{taskFinishTime},#{taskStatus});
+    </insert>
+    <delete id="deleteTask" parameterType="String">
+        delete from task where task_id = #{id};
+    </delete>
+    <update id="updateTask" parameterType="com.zlw.crowdsourcing.pojo.Task">
+        update task set task_startTime = #{taskStartTime}, task_endTime = #{taskEndTime},task_desc = #{taskDesc}, task_incentive = #{taskIncentive}, task_worNum = #{taskWorNum}, location_id = #{locationId} ,employer_id = #{employerId},task_createTime = #{taskCreateTime},task_finishTime = #{taskFinishTime},task_status=#{taskStatus} where task_id = #{taskId};
+    </update>
+    <update id="updateTask1">
+        update task set task_finishTime = #{taskFinishTime},task_status = #{taskStatus} where task_id = #{taskId}
+    </update>
+</mapper>

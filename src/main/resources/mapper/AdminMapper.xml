@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.AdminMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Admin">
+        <id column="admin_id" property="adminId" />
+        <result column="admin_name" property="adminName" />
+        <result column="admin_pwd" property="adminPwd" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        admin_id, admin_name, admin_pwd
+    </sql>
+
+    <select id="selectAdmins" resultMap="BaseResultMap">
+        select admin_id,admin_name,admin_pwd from admin;
+    </select>
+    <select id="selectAdminById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Admin">
+        select admin_id,admin_name,admin_pwd from admin where admin_id = #{id};
+    </select>
+    <insert id="insertAdmin" parameterType="com.zlw.crowdsourcing.pojo.Admin">
+        insert into admin(admin_id,admin_name,admin_pwd) values(#{adminId},#{adminName},#{adminPwd});
+    </insert>
+    <delete id="deleteAdmin" parameterType="String">
+        delete from admin where admin_id = #{id};
+    </delete>
+    <update id="updateAdmin" parameterType="com.zlw.crowdsourcing.pojo.Admin">
+        update admin set admin_name = #{adminName},admin_pwd = #{adminPwd} where admin_id = #{adminId};
+    </update>
+
+</mapper>

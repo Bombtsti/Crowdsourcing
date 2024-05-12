@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.OrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Order">
+        <id column="order_id" property="orderId" />
+        <result column="order_create" property="orderCreate" />
+        <result column="order_finish" property="orderFinish" />
+        <result column="order_status" property="orderStatus" />
+        <result column="task_id" property="taskId" />
+        <result column="worker_id" property="workerId" />
+        <result column="employer_id" property="employerId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        order_id, order_create, order_finish, order_status,task_id, worker_id,employer_id
+    </sql>
+
+    <select id="selectTaskinfos" resultMap="BaseResultMap">
+        select order_id, order_create, order_finish,order_status, task_id, worker_id,employer_id from order;
+    </select>
+    <select id="selectTaskinfoById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Order">
+        select order_id, order_create, order_finish,order_status, task_id, worker_id ,employer_id from order where order_id = #{id};
+    </select>
+    <select id="selectTaskByTaskAndWorker" resultType="com.zlw.crowdsourcing.pojo.Order">
+        select order_id, order_create, order_finish, order_status,task_id, worker_id,employer_id where task_id = #{taskId} and worker_id = #{workerId}
+    </select>
+    <insert id="insertTaskinfo" parameterType="com.zlw.crowdsourcing.pojo.Order">
+        insert into order(order_id, order_create, order_finish,order_status, task_id, worker_id,employer_id)
+        values(#{orderId},#{orderCreate},#{orderFinish},#{orderStatus},#{taskId},#{workerId},#{employerId});
+    </insert>
+    <delete id="deleteTaskinfo" parameterType="String">
+        delete from order where order_id = #{id};
+    </delete>
+    <update id="updateTaskinfo" parameterType="com.zlw.crowdsourcing.pojo.Order">
+        update order set order_create = #{orderCreate}, order_finish = #{orderFinish}, order_status = #{orderStatus},task_id = #{taskId}, worker_id = #{workerId},employer_id = #{employerId} where order_id = #{orderId};
+    </update>
+    <update id="updateOrderStatus">
+        update order set order_status = #{orderStatus} where worker_id = #{workerId} and task_id = #{taskId}
+    </update>
+
+</mapper>

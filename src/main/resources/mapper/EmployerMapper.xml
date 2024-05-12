@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.EmployerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Employer">
+        <id column="employer_id" property="employerId" />
+        <result column="employer_name" property="employerName" />
+        <result column="employer_pwd" property="employerPwd" />
+        <result column="employer_phone" property="employerPhone" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        employer_id, employer_name, employer_pwd, employer_phone
+    </sql>
+
+    <select id="selectEmployers" resultMap="BaseResultMap">
+        select employer_id,employer_name,employer_pwd,employer_phone from employer
+    </select>
+    <select id="selectEmployerById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Employer">
+        select employer_id,employer_name,employer_pwd,employer_phone from employer where employer_id = #{id}
+    </select>
+    <insert id="insertEmployer" parameterType="com.zlw.crowdsourcing.pojo.Employer">
+        insert into employer(employer_id,employer_name,employer_pwd,employer_phone) values(#{employerId},#{employerName},#{employerPwd},#{employerPhone})
+    </insert>
+    <delete id="deleteEmployer" parameterType="String">
+        delete from employer where employer_id = #{id};
+    </delete>
+    <update id="updateEmployer" parameterType="com.zlw.crowdsourcing.pojo.Employer">
+        update employer set employer_name = #{employerName},employer_pwd = #{employerPwd},employer_phone = #{employerPhone} where employer_id = #{employerId};
+    </update>
+
+</mapper>

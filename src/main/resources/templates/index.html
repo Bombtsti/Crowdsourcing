@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- Site Properties -->
+    <title>首页</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mycss1.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/semantic.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/myjs1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+<div class="bigbox">
+    <!-- Page Contents -->
+    <div class="pusher">
+        <div class="ui vertical masthead center aligned segment">
+            <div class="ui container">
+                <div class="ui large secondary pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <a class="active item" th:href="@{/toIndex}">首页</a>
+                    <a class="item" th:if="${session.userid!=null}" th:href="@{/toEdit}">发布需求</a>
+                    <a class="item" th:if="${session.userid==null}" th:href="@{/toLogin}">发布需求</a>
+                    <a class="item" th:if="${session.userid!=null}" th:href="@{/task/getAllTaskVo}">我的需求</a>
+                    <a class="item" th:if="${session.userid==null}" th:href="@{/toLogin}">我的需求</a>
+<!--                    <a class="item">待定</a>-->
+                    <div class="right item">
+                        <div class="content" th:if="${session.userid!=null}">
+                            <div class="ui inline dropdown">
+                                <div class="text">
+                                    <img class="ui avatar image" th:src="@{/image/usericon.png}">
+                                    <a th:text="${session.username}"></a>
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar1.png}">
+                                        <a href="#" th:text="个人中心"></a>
+                                    </div>
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar2.png}">
+                                        <a th:href="@{/logout}" th:text="退出登录"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="ui inverted button" th:if="${session.userid==null}" th:href="@{/toLogin}">登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui text container">
+                <h1 class="ui inverted header">
+                    crowdsourcing
+                </h1>
+                <h2>众包平台</h2>
+                <div class="ui huge primary button">Get Started<i class="right arrow icon"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

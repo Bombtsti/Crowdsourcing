@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mycss1.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/semantic.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/myjs1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+
+<div class="bigbox">
+    <div class="pusher">
+        <div class="ui vertical masthead center aligned segment">
+            <div class="ui container">
+                <div class="ui large secondary pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <a class="item" th:href="@{/toIndex}">首页</a>
+                    <a class="active item" th:if="${session.userid!=null}" th:href="@{/toEdit}">发布需求</a>
+                    <a class="active item" th:if="${session.userid==null}" th:href="@{/toLogin}">发布需求</a>
+                    <a class="item" th:if="${session.userid!=null}" th:href="@{/task/getAllTaskVo}">我的需求</a>
+                    <a class="item" th:if="${session.userid==null}" th:href="@{/toLogin}">我的需求</a>
+<!--                    <a class="item">待定</a>-->
+                    <div class="right item">
+                        <div class="content" th:if="${session.userid!=null}">
+                            <div class="ui inline dropdown">
+                                <div class="text">
+                                    <img class="ui avatar image" th:src="@{/image/usericon.png}">
+                                    <a href="#" th:text="${session.username}"></a>
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar1.png}">
+                                        <a href="#" th:text="个人中心"></a>
+                                    </div>
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar2.png}">
+                                        <a th:href="@{/logout}" th:text="退出登录"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="ui inverted button" th:if="${session.userid==null}" th:href="@{/login}">登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <form class="ui large form box1" id="dataForm">
+                <div class="inline fields" style="display: none">
+                    <label>任务ID</label>
+                    <div class="eight wide field">
+                        <input type="text" id="taskId" name="taskId">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>任务时间</label>
+                    <div class="five wide field">
+                        <input type="datetime-local" id="taskStartTime" name="taskStartTime" placeholder="开始时间">
+                    </div>
+                    <div class="five wide field">
+                        <input type="datetime-local" id="taskEndTime" name="taskEndTime" placeholder="结束时间">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>任务描述</label>
+                    <div class="field">
+                        <textarea cols="50" rows="5" id="taskDesc" name="taskDesc"></textarea>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>任务报酬</label>
+                    <div class="five wide field">
+                        <input type="text" id="taskIncentive" name="taskIncentive">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>工人数量</label>
+                    <div class="five wide field">
+                        <input type="text" id="taskWorNum" name="taskWorNum">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>任务位置</label>
+                    <div class="five wide field">
+                        <input type="text" id="locationDesc" name="locationDesc">
+                    </div>
+                </div>
+<!--                <div class="inline fields">-->
+<!--                    <label>联系方式</label>-->
+<!--                    <div class="three wide field">-->
+<!--                        <input type="text" name="employerName" placeholder="姓名">-->
+<!--                    </div>-->
+<!--                    <div class="three wide field">-->
+<!--                        <input type="text" name="employerPhone" placeholder="电话">-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <input class="ui button" onclick="addTask()" value="submit" type="button"></input>
+            </form>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+        function addTask(){
+            var object = new Object(); //创建一个存放数据的对象
+            object["taskId"] = "";
+            object["taskStartTime"] = $("#taskStartTime").val();
+            object["taskEndTime"] = $("#taskEndTime").val();
+            object["taskDesc"] = $("#taskDesc").val();
+            object["taskIncentive"] = $("#taskIncentive").val();
+            object["taskWorNum"] = $("#taskWorNum").val();
+            object["locationDesc"] = $("#locationDesc").val();
+            var jsonData = JSON.stringify(object); //根据数据生成json数据
+            $.ajax({
+                type:"POST",
+                url:"/task/addTask",
+                dataType:"json",
+                contentType: "application/json;charset=UTF-8",
+                data: jsonData,
+                success:function(res){
+                    if (res.status == 200){
+                        alert("添加成功")
+                        window.location.href = "/toEdit"
+                    }else{
+                        alert("添加失败")
+                        window.location.href = "/toEdit"
+                    }
+                },
+                error:function(xhr){
+                    alert("操作失败")
+                }
+            })
+        }
+    </script>
+</body>
+</html>

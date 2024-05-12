@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <title>注册登录</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="form-box">
+        <!-- 注册 -->
+        <div class="register-box hidden">
+            <h1>register</h1>
+            <input type="text" id="role" placeholder="角色(用户/工人)">
+            <input type="text" id="id" placeholder="账号">
+            <input type="text" id="name" placeholder="用户名">
+            <input type="password" id="pwd" placeholder="密码">
+            <input type="text" id="phone" placeholder="电话">
+            <button th:onclick="register()">注册</button>
+        </div>
+        <!-- 登录 -->
+        <div class="login-box">
+            <h1>login</h1>
+            <input type="text" id="userid" placeholder="账号">
+            <input type="password" id="password" placeholder="密码">
+            <button th:onclick="login()">登录</button>
+        </div>
+    </div>
+    <div class="con-box left">
+        <h2><span>crowdsourcing</span></h2>
+        <p>众包平台</p>
+        <img th:src="@{/image/cat1.png}"/>
+        <p>已有账号</p>
+        <button id="login">去登录</button>
+    </div>
+    <div class="con-box right">
+        <h2><span>crowdsourcing</span></h2>
+        <p>众包平台</p>
+        <img th:src="@{/image/cat2.png}"/>
+        <p>没有账号？</p>
+        <button id="register">去注册</button>
+    </div>
+    <input id="loc" type="text" style="display: none">
+</div>
+<script>
+    //用于页面切换
+    // 要操作到的元素
+    let tologin=document.getElementById('login');
+    let toregister=document.getElementById('register');
+    let form_box=document.getElementsByClassName('form-box')[0];
+    let register_box=document.getElementsByClassName('register-box')[0];
+    let login_box=document.getElementsByClassName('login-box')[0];
+    // 去注册按钮点击事件
+    toregister.addEventListener('click',()=>{
+        form_box.style.transform='translateX(80%)';
+        login_box.classList.add('hidden');
+        register_box.classList.remove('hidden');
+    })
+    // 去登录按钮点击事件
+    tologin.addEventListener('click',()=>{
+        form_box.style.transform='translateX(0%)';
+        register_box.classList.add('hidden');
+        login_box.classList.remove('hidden');
+    })
+
+    //获取当前地理信息
+    function getLocation(){
+        window.navigator.geolocation.getCurrentPosition(function (position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            //alert(latitude);
+            var location = longitude+","+latitude;
+            //x.innerHTML = location;
+            $("#loc").val(location);
+        },function (msg) {
+            alert("获取您的地理信息失败");
+        });
+    }
+    getLocation();
+
+    //注册
+    function register() {
+        //alert($("#loc").val());
+        var object = new Object();
+        object["id"] = $("#id").val();
+        object["role"] = $("#role").val();
+        object["name"] = $("#name").val();
+        object["pwd"] = $("#pwd").val();
+        object["phone"] = $("#phone").val();
+        object["loc"] = $("#loc").val();
+        var jsonData = JSON.stringify(object);
+        console.log(jsonData)
+        $.ajax({
+            type:"post",
+            url:"/user/register",
+            dataType:"json",
+            contentType: "application/json;charset=UTF-8",
+            data: jsonData,
+            success:function (res) {
+                console.log(res)
+                if (res.status == 200){
+                    alert("注册成功")
+                    window.location.href = "/toLogin"
+                }else{
+                    if (res.message == "账号已存在")
+                        alert("账号已存在")
+                    else
+                        alert("注册失败")
+                }
+            },
+            error:function (res) {
+                console.log("123")
+                alert("注册失败")
+            }
+        })
+    }
+    //登录
+    function login() {
+        var object = new Object();
+        object["userid"] = $("#userid").val();
+        object["password"] = $("#password").val();
+        object["loc"] = $("#loc").val();
+        var jsonData = JSON.stringify(object);
+        $.ajax({
+            type: "post",
+            url: "/user/login",
+            dataType: "json",
+            contentType: "application/json;charset=UTF-8",
+            data: jsonData,
+            success: function (res) {
+                if (res.message=="employer"){
+                    window.location.href = "/toIndex";
+                }else if(res.message=="worker"){
+                    window.location.href = "/worker/toIndex";
+                }else if(res.message=="admin"){
+                    window.location.href = "/admin/toIndex";
+                }else{
+                    alert("登录失败")
+                }
+            },
+            error:function (res) {
+                console.log(res)
+            }
+        })
+    }
+</script>
+</body>
+
+</html>

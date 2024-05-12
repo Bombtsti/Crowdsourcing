@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- Site Properties -->
+    <title>task-list</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mycss1.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/common.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dialog.css}">
+
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/semantic.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/myjs1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/js/getLocation.js}"></script>
+
+</head>
+<body>
+<div class="bigbox">
+    <!-- Page Contents -->
+    <div class="pusher">
+        <div class="ui vertical masthead center aligned segment">
+            <div class="ui container">
+                <div class="ui large secondary pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <a class="item" th:href="@{/worker/toIndex}">首页</a>
+                    <a class="active item" th:if="${session.userid!=null}" th:href="@{/task/getAllTaskVoByWorkerId}">查看任务</a>
+                    <a class="active item" th:if="${session.userid==null}" th:href="@{/toLogin}">查看任务</a>
+                    <a class="item" th:if="${session.userid!=null}" th:href="@{/worker/toOrderList}">交易记录</a>
+                    <a class="item" th:if="${session.userid==null}" th:href="@{/toLogin}">交易记录</a>
+<!--                    <a class="item">待定</a>-->
+                    <div class="right item">
+                        <div class="content" th:if="${session.userid!=null}">
+                            <div class="ui inline dropdown">
+                                <div class="text">
+                                    <img class="ui avatar image" th:src="@{/image/usericon.png}">
+                                    <a th:text="${session.username}"></a>
+                                </div>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar1.png}">
+                                        <a href="#" th:text="个人中心"></a>
+                                    </div>
+                                    <div class="item">
+                                        <img class="ui avatar image" th:src="@{/image/avatar2.png}">
+                                        <a th:href="@{/logout}" th:text="退出登录"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="ui inverted button" th:if="${session.userid==null}" th:href="@{/toLogin}">登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box1">
+                <table class="ui table segment">
+                    <thead>
+                    <tr>
+                        <th class="two wide">ID</th>
+                        <th class="two wide">开始时间</th>
+                        <th class="two wide">结束时间</th>
+                        <th class="two wide">任务描述</th>
+                        <th class="two wide">状态</th>
+                        <th class="two wide">创建时间</th>
+                        <th class="two wide">位置</th>
+                        <th class="two wide">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="task:${pageInfo.list}">
+                        <td th:text="${task.taskId}"></td>
+                        <td th:text="${task.taskStartTime}"></td>
+                        <td th:text="${task.taskEndTime}"></td>
+                        <td th:text="${task.taskDesc}"></td>
+                        <td th:text="${task.orderStatus}"></td>
+                        <td th:text="${task.taskCreateTime}"></td>
+                        <td th:text="${task.locationDesc}"></td>
+                        <td>
+                            <button class="find-btn" th:onclick="findTaskInfo([[${task.taskId}]])">详情</button>
+                            <button class="submit-btn" th:onclick="dataPage([[${task.taskId}]])">提交</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>当前 <span th:text="${pageInfo.pageNum}"></span> 页,
+                    总 <span th:text="${pageInfo.pages}"></span> 页,
+                    共<span th:text="${pageInfo.total}"></span> 条记录
+                </p>
+                <br>
+                <a th:href="@{/task/getAllTaskVoByWorkerId}">首页</a>
+                <a th:href="@{/task/getAllTaskVoByWorkerId(pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">上一页</a>
+                <a th:href="@{/task/getAllTaskVoByWorkerId(pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">下一页</a>
+                <a th:href="@{/task/getAllTaskVoByWorkerId(pageNum=${pageInfo.pages})}">尾页</a>
+
+                <!--            dialog-->
+                <div class="modal">
+                    <div class="close-btn">X</div>
+                    <h1>提交数据</h1>
+                    <div class="box2">
+                        <p><input type="text" id="dataGrade" placeholder="等级"></p>
+                        <p><input type="text" id="dataDesc" placeholder="描述"></p>
+                        <p><input type="text" id="dataImg" placeholder="照片"></p>
+                        <p><input type="text" id="taskId" value="" style="display: none"></p>
+                        <p><button class="button" th:onclick="">submit</button></p>
+                        <p>具体位置:</p>
+                    </div>
+                </div>
+
+            </div>
+            <div id="loc" style="display: none"></div>
+        </div>
+    </div>
+</div>
+<script>
+    const findBtn = document.querySelector('.find-btn')
+    const submitBtn = document.querySelector('.submit-btn')
+    const closeBtn = document.querySelector('.close-btn')
+    const modal = document.querySelector('.modal')
+    const bigbox = document.querySelector('.bigbox')
+
+    // findBtn.addEventListener('click',function () {
+    //     modal.style.display = 'flex'
+    // })
+    closeBtn.addEventListener('click',function () {
+        modal.style.display = 'none'
+    })
+
+    function findTaskInfo(id) {
+        modal.style.display = 'flex';
+        var innerHTML = "";
+        $(".box2").html("");
+        $.ajax({
+            type:"get",
+            url:"/task/selectTaskVoById/"+id,
+            success:function (res) {
+                var taskvo = res.data
+                var loc = taskvo.locationLong+","+taskvo.locationLat
+                innerHTML += "<p>任务位置:"+taskvo.locationDesc+"</p>";
+                innerHTML += "<p>具体位置:"+loc+"</p>";
+                innerHTML += "<p>雇主ID:"+taskvo.employerId+"</p>";
+                innerHTML += "<p>雇主姓名:"+taskvo.employerName+"</p>";
+                innerHTML += "<p>任务酬金:"+taskvo.taskIncentive+"</p>";
+                $(".box2").html(innerHTML);
+            },
+            error:function (res) {
+                console.log(res)
+            }
+        })
+    }
+
+    function dataPage(id) {
+        modal.style.display = 'flex';
+        var innerHTML = "";
+        $(".box2").html("");
+        innerHTML += "<p><input type=\"text\" id=\"dataGrade\" placeholder=\"等级\"></p>";
+        innerHTML += "<p><input type=\"text\" id=\"dataDesc\" placeholder=\"描述\"></p>";
+        innerHTML += "<p><input type=\"text\" id=\"dataImg\" placeholder=\"照片\"></p>";
+        innerHTML += "<p><input type=\"text\" id=\"taskId\" value=\""+id+"\" style=\"display: none\"></p>";
+        innerHTML += "<button onclick='submitData()'>submit</button>";
+        $(".box2").html(innerHTML);
+    }
+    function submitData() {
+        var obj = new Object();
+        console.log($("#taskId").val())
+        obj["dataId"] = "123";
+        obj["dataGrade"] = $("#dataGrade").val()
+        obj["dataDesc"] = $("#dataDesc").val()
+        obj["dataImg"] = $("#dataImg").val()
+        obj["taskId"] = $("#taskId").val()
+        var jsonData = JSON.stringify(obj);
+        $.ajax({
+            type:"post",
+            url:"/data/submitData",
+            dataType:"json",
+            contentType:"application/json;charset=UTF-8",
+            data:jsonData,
+            success:function (res) {
+                if (res.status == 200){
+                    window.location.href = "/task/getAllTaskVoByWorkerId";
+                }else{
+                    alert("操作失败")
+                }
+            },
+            error:function (res) {
+                alert("操作失败")
+                console.log(res)
+            }
+        })
+    }
+
+</script>
+</body>
+
+</html>

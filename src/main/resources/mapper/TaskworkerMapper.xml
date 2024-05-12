@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.TaskworkerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Taskworker">
+        <id column="task_id" property="taskId" />
+        <result column="worker_id" property="workerId" />
+        <result column="order_status" property="orderStatus" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        task_id, worker_id,order_status
+    </sql>
+
+    <insert id="insertTaskWorker" parameterType="com.zlw.crowdsourcing.pojo.Taskworker">
+        insert into taskworker(task_id, worker_id,order_status) values(#{taskId},#{workerId},#{orderStatus})
+    </insert>
+
+    <select id="selectTaskVoByWorkerId" parameterType="String" resultType="com.zlw.crowdsourcing.vo.WorkerTaskVo">
+        SELECT t.task_id,t.task_startTime,t.task_endTime,t.task_desc,t.task_incentive,t.task_worNum,l.location_long,l.location_lat,l.location_desc,t.task_createTime,t.task_finishTime,t.task_status,t.employer_id,e.employer_name,tw.order_status from task t,location l,employer e,taskworker tw
+        where t.location_id = l.location_id and t.employer_id = e.employer_id and tw.task_id = t.task_id and tw.order_status = '0' and tw.worker_id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        update taskworker set order_status = #{orderStatus} where task_id = #{taskId} and worker_id = #{workerId}
+    </update>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.LocationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Location">
+        <id column="location_id" property="locationId" />
+        <result column="location_long" property="locationLong" />
+        <result column="location_lat" property="locationLat" />
+        <result column="location_desc" property="locationDesc" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        location_id, location_long, location_lat, location_desc
+    </sql>
+
+    <select id="selectLocationById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Location">
+        select location_id,location_long,location_lat,location_desc from location where location_id = #{id};
+    </select>
+    <insert id="insertLocation" parameterType="com.zlw.crowdsourcing.pojo.Location">
+        insert into location(location_id,location_long,location_lat,location_desc) values(#{locationId},#{locationLong},#{locationLat},#{locationDesc});
+    </insert>
+    <delete id="deleteLocation" parameterType="String">
+        delete from location where location_id = #{id};
+    </delete>
+    <update id="updateLocation" parameterType="map">
+        update location,worker set location.location_long = #{locationLong},location.location_lat = #{locationLat},location.location_desc = #{locationDesc}
+        where location.location_id = worker.location_id and worker.worker_id = #{workerId}
+    </update>
+</mapper>

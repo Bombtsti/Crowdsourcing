@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.WorkerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.Worker">
+        <id column="worker_id" property="workerId" />
+        <result column="worker_name" property="workerName" />
+        <result column="worker_pwd" property="workerPwd" />
+        <result column="worker_phone" property="workerPhone" />
+        <result column="worker_reliable" property="workerReliable" />
+        <result column="location_id" property="locationId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        worker_id, worker_name, worker_pwd, worker_phone, worker_reliable, location_id
+    </sql>
+
+    <select id="selectWorkers" resultMap="BaseResultMap">
+        select worker_id, worker_name, worker_pwd, worker_phone, worker_reliable, location_id from worker;
+    </select>
+    <select id="selectWorkerVo" resultType="com.zlw.crowdsourcing.vo.WorkerVo">
+       select w.worker_id, w.worker_name, w.worker_pwd, w.worker_phone, w.worker_reliable, w.location_id,l.location_long,l.location_lat,l.location_desc from worker w, location l where w.location_id = l.location_id
+    </select>
+    <select id="selectWorkerById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.Worker">
+        select worker_id, worker_name, worker_pwd, worker_phone, worker_reliable, location_id from worker where worker_id = #{id}
+    </select>
+    <insert id="insertWorker" parameterType="com.zlw.crowdsourcing.pojo.Worker">
+        insert into worker(worker_id, worker_name, worker_pwd, worker_phone, worker_reliable, location_id)
+        values(#{workerId},#{workerName},#{workerPwd},#{workerPhone},#{workerReliable},#{locationId});
+    </insert>
+    <delete id="deleteWorker" parameterType="String">
+        delete from worker where worker_id = #{id};
+    </delete>
+    <update id="updateWorker" parameterType="com.zlw.crowdsourcing.pojo.Worker">
+        update worker set worker_name = #{workerName}, worker_pwd = #{workerPwd}, worker_phone = #{workerPhone}, worker_reliable = #{workerReliable}, location_id = #{locationId} where worker_id = #{workerId};
+    </update>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zlw.crowdsourcing.mapper.ResDataMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zlw.crowdsourcing.pojo.ResData">
+        <id column="data_id" property="dataId" />
+        <result column="data_grade" property="dataGrade" />
+        <result column="data_desc" property="dataDesc" />
+        <result column="data_img" property="dataImg" />
+        <result column="task_id" property="taskId" />
+        <result column="worker_id" property="workerId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        data_id, data_grade, data_desc, data_img, task_id, worker_id
+    </sql>
+
+    <select id="selectResDatas" resultMap="BaseResultMap">
+        select data_id, data_grade, data_desc, data_img,task_id,worker_id from resdata;
+    </select>
+    <select id="selectResDataById" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.ResData">
+        select data_id, data_grade, data_desc, data_img, task_id,worker_id from resdata where data_id = #{id};
+    </select>
+    <select id="getResDataByTaskId" parameterType="String" resultType="com.zlw.crowdsourcing.pojo.ResData">
+        select data_id, data_grade, data_desc, data_img ,task_id,worker_id from resdata where task_id = #{id}
+    </select>
+    <insert id="insertResData" parameterType="com.zlw.crowdsourcing.pojo.ResData">
+        insert into resdata(data_id, data_grade, data_desc, data_img,task_id,worker_id) values(#{dataId},#{dataGrade},#{dataDesc},#{dataImg},#{taskId},#{workerId});
+    </insert>
+    <delete id="deleteResData" parameterType="String">
+        delete from resdata where data_id = #{id};
+    </delete>
+    <update id="updateResData" parameterType="com.zlw.crowdsourcing.pojo.ResData">
+        update resdata set data_grade = #{dataGrade}, data_desc = #{dataDesc}, data_img = #{dataImg},task_id = #{taskId},worker_id = #{workerId} where data_id = #{dataId};
+    </update>
+
+</mapper>
